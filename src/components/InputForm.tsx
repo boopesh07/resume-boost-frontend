@@ -7,47 +7,71 @@ import { useRouter } from 'next/navigation';
 const InputForm: React.FC = () => {
   const [jobDescription, setJobDescription] = useState('');
   const [resume, setResume] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const router = useRouter();
+
+  const validateInputs = () => {
+    if (!jobDescription && !resume) {
+      setErrorMessage('Both job description and resume fields are required.');
+      return false;
+    }
+    if (!jobDescription && resume) {
+      setErrorMessage('Please provide a valid job description.');
+      return false;
+    }
+    if (!resume && jobDescription) {
+      setErrorMessage('Please provide a valid resume.');
+      return false;
+    }
+    setErrorMessage('');
+    return true;
+  };
 
   const handleBoostResume = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Make API call to boost resume
-    // Assuming we have an API endpoint that returns the tailored resume
-    const response = await fetch('/api/boost-resume', {
+    if (!validateInputs()) return;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate_resume`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ jobDescription, resume }),
+      body: JSON.stringify({ job_description: jobDescription, resume_text: resume }),
     });
-    const data = await response.json();
-    // Redirect to /resume route with the tailored resume data
-    router.push(`/resume?data=${encodeURIComponent(JSON.stringify(data))}`);
+    if (response.ok) {
+      const data = await response.json();
+      router.push(`/resume?data=${encodeURIComponent(JSON.stringify(data))}`);
+    } else {
+      console.error('Failed to boost resume');
+    }
   };
 
   const handleGenerateCoverLetter = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Make API call to generate cover letter
-    // Assuming we have an API endpoint that returns the cover letter
-    const response = await fetch('/api/generate-cover-letter', {
+    if (!validateInputs()) return;
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate_cover_letter`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ jobDescription, resume }),
+      body: JSON.stringify({ job_description: jobDescription, resume_text: resume }),
     });
-    const data = await response.json();
-    // Redirect to /cover route with the cover letter data
-    router.push(`/cover?data=${encodeURIComponent(JSON.stringify(data))}`);
+    if (response.ok) {
+      const data = await response.json();
+      router.push(`/cover?data=${encodeURIComponent(JSON.stringify(data))}`);
+    } else {
+      console.error('Failed to generate cover letter');
+    }
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white p-4">
-      <h1 className="text-3xl font-bold mt-10 mb-5">Welcome to Resume Boost</h1>
+    <div className="flex-col items-center min-h-screen bg-gray-900 text-white p-4">
       <p className="mb-5">Please upload your resume and the job description below</p>
-      <form className="w-full max-w-6xl" onSubmit={handleBoostResume}>
-        <div className="flex justify-between mb-8 space-x-8">
-          <div className="w-1/2">
+      {errorMessage && <p className="text-red-500 mb-5">{errorMessage}</p>}
+      <form>
+        <div className="flex justify-between w-full h-full mb-8 space-x-8">
+          <div id = "Resume" className="w-full flex-col">
             <label className="block text-center text-gray-300 text-sm font-bold mb-2" htmlFor="jobDescription">
               Job Description
             </label>
@@ -59,7 +83,7 @@ const InputForm: React.FC = () => {
               onChange={(e) => setJobDescription(e.target.value)}
             ></textarea>
           </div>
-          <div className="w-1/2">
+          <div className="w-full">
             <label className="block text-center text-gray-300 text-sm font-bold mb-2" htmlFor="resume">
               Resume
             </label>
