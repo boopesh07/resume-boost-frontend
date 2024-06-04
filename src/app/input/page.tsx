@@ -1,3 +1,4 @@
+
 import InputForm from '../../components/InputForm';
 
 const Home: React.FC = () => {
