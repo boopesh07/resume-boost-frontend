@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TailoredResume from '@/components/TailoredResume';
 import KeywordsInserted from '@/components/KeywordsInserted';
-import ScoreImprovement from '@/components/ScoreImprovement';
 import ProjectSuggestions from '@/components/ProjectSuggestions';
 import CircularProgressBar from '@/components/CircularProgressBar';
 

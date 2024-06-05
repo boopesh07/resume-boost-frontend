@@ -82,20 +82,20 @@ const InputForm: React.FC = () => {
         Welcome to Resume Boost
       </h1>
       <p className="mb-5 font-medium tracking-wider">
-        Please upload your resume and the job description below
+        Please paste your resume and job description below
       </p>
       <form className="w-full max-w-7xl" onSubmit={handleBoostResume}>
         <div className="flex justify-between gap-20 mb-8">
           <div>
             <label
-              className="block text-left text-gray-300 text-2xl pl-3 font-bold mb-5"
+              className="block text-left text-gray-300 text-2xl pl-3 font-bold mb-5 text-center"
               htmlFor="jobDescription"
             >
               Job Description
             </label>
             <textarea
               id="jobDescription"
-              placeholder="Add Job Description"
+              placeholder="Add Job Description...."
               className="w-full p-5 text-sm text-white bg-gray-800 border-0 focus:ring-0 rounded-2xl placeholder:text-[1rem] placeholder:font-medium resize-none"
               rows={30}
               cols={120}
@@ -105,7 +105,7 @@ const InputForm: React.FC = () => {
           </div>
           <div>
             <label
-              className="block text-left text-gray-300 text-2xl pl-3 font-bold mb-5"
+              className="block text-left text-gray-300 text-2xl pl-3 font-bold mb-5 text-center"
               htmlFor="resume"
             >
               Resume
@@ -114,7 +114,7 @@ const InputForm: React.FC = () => {
               id="resume"
               className="w-full p-5 text-sm text-white bg-gray-800 border-0 focus:ring-0 rounded-2xl placeholder:text-[1rem] placeholder:font-medium resize-none"
               rows={30}
-              placeholder="Mock Resume Data...."
+              placeholder="Add Resume here...."
               cols={120}
               value={resume}
               onChange={(e) => setResume(e.target.value)}
