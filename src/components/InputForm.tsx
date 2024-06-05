@@ -1,4 +1,4 @@
-"use client"; // This directive will ensure the component is treated as a client component
+"use client"; // This directive ensures the component is treated as a client component
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -27,47 +27,30 @@ const InputForm: React.FC = () => {
     return true;
   };
 
-  const handleBoostResume = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent, endpoint: string, redirectPath: string) => {
     e.preventDefault();
     if (!validateInputs()) return;
 
     setLoading(true);
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate_resume`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ job_description: jobDescription, resume_text: resume }),
-    });
-    setLoading(false);
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ job_description: jobDescription, resume_text: resume }),
+      });
 
-    if (response.ok) {
-      const data = await response.json();
-      router.push(`/resume?runId=${data.run_id}`);
-    } else {
-      console.error('Failed to boost resume');
-    }
-  };
-
-  const handleGenerateCoverLetter = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateInputs()) return;
-
-    setLoading(true);
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/generate_cover_letter`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ job_description: jobDescription, resume_text: resume }),
-    });
-    setLoading(false);
-
-    if (response.ok) {
-      const data = await response.json();
-      router.push(`/cover?runId=${data.run_id}`);
-    } else {
-      console.error('Failed to generate cover letter');
+      if (response.ok) {
+        const data = await response.json();
+        router.push(`/${redirectPath}?runId=${data.run_id}`);
+      } else {
+        console.error('Failed to process request');
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,7 +67,10 @@ const InputForm: React.FC = () => {
       <p className="mb-5 font-medium tracking-wider">
         Please paste your resume and job description below
       </p>
-      <form className="w-full max-w-7xl" onSubmit={handleBoostResume}>
+      {errorMessage && (
+        <div className="text-red-500 mb-5 text-center mb-5">{errorMessage}</div>
+      )}
+      <form className="w-full max-w-7xl" onSubmit={(e) => handleFormSubmit(e, 'generate_resume', 'resume')}>
         <div className="flex justify-between gap-20 mb-8">
           <div>
             <label
@@ -121,13 +107,10 @@ const InputForm: React.FC = () => {
             ></textarea>
           </div>
         </div>
-        {errorMessage && (
-          <div className="text-red-500 mb-5">{errorMessage}</div>
-        )}
+
         <div className="flex items-center justify-between">
           <button
             type="submit"
-            onClick={handleBoostResume}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={loading}
           >
@@ -135,7 +118,7 @@ const InputForm: React.FC = () => {
           </button>
           <button
             type="button"
-            onClick={handleGenerateCoverLetter}
+            onClick={(e) => handleFormSubmit(e, 'generate_cover_letter', 'cover')}
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             disabled={loading}
           >

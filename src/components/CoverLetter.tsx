@@ -1,4 +1,3 @@
-// components/CoverLetter.tsx
 import React from 'react';
 
 interface CoverLetterProps {

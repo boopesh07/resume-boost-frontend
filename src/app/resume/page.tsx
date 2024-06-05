@@ -1,4 +1,4 @@
-"use client"; // Ensure this component is treated as a client component
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -31,10 +31,11 @@ const ResumePage: React.FC = () => {
           const data: ResumeData = await response.json();
           setParsedData(data);
         } else {
-          setError('Failed to fetch resume data');
+          const errorText = await response.text();
+          setError(`Failed to fetch resume data: ${errorText}`);
         }
       } catch (error) {
-        setError('An error occurred');
+        setError('An error occurred while fetching data.');
       } finally {
         setLoading(false);
       }
@@ -44,63 +45,58 @@ const ResumePage: React.FC = () => {
       fetchData();
     } else {
       setLoading(false);
-      setError('Run ID not provided');
+      setError('Run ID not provided, Its a error please contact support');
     }
   }, []);
 
-  if (loading) return <div className="loader">Loading...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white">
+        <div className="loader">Loading...</div>
+      </div>
+    );
+  }
 
-  const extractFinalScore = (scoreImprovement: string) => {
-    const match = scoreImprovement.match(/Final score\s*:\s*(\d+)%/);
-    if (match) {
-      return parseInt(match[1], 10);
-    } else {
-      return 0;
-    }
+  if (error) {
+    return <div className="error">{error}</div>;
+  }
+
+  const extractScore = (scoreImprovement: string, type: 'Initial' | 'Final') => {
+    const regex = new RegExp(`${type} score\\s*:\\s*(\\d+)%`);
+    const match = scoreImprovement.match(regex);
+    return match ? parseInt(match[1], 10) : 0;
   };
 
-  const extractInitialScore = (scoreImprovement: string) => {
-    const match = scoreImprovement.match(/Initial score\s*:\s*(\d+)%/);
-    if (match) {
-      return parseInt(match[1], 10);
-    } else {
-      return 0;
-    }
-  };
-
-  const finalScore = parsedData ? extractFinalScore(parsedData.score_improvement) : 0;
-  const initialScore = parsedData ? extractInitialScore(parsedData.score_improvement) : 0;
-
+  const finalScore = parsedData ? extractScore(parsedData.score_improvement, 'Final') : 0;
+  const initialScore = parsedData ? extractScore(parsedData.score_improvement, 'Initial') : 0;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8 flex">
       {/* Sidebar */}
       <aside className="h-screen w-96 px-5 bg-gray-900 text-white fixed top-0 left-0 flex flex-col items-center justify-start overflow-y-scroll no-scrollbar">
-      <h2 className="text-2xl font-semibold p-4 mt-4">Resume Scores</h2>
-<div className="flex flex-col gap-10">
-  <div className="flex gap-5 justify-center">
-    <div className="flex flex-col items-center gap-4">
-      <h3 className="text-2xl font-semibold mb-4">Initial Score</h3>
-      <CircularProgressBar score={initialScore} />
-    </div>
-    <div className="flex flex-col items-center gap-4">
-      <h3 className="text-2xl font-semibold mb-4">Final Score</h3>
-      <CircularProgressBar score={finalScore} />
-    </div>
-  </div>
-  {parsedData && (
-    <>
-      <div className="pb-5">
-        <KeywordsInserted keywords={parsedData.keywords_inserted} />
-      </div>
-      <div className="pb-5">
-        <ProjectSuggestions projects={parsedData.project_suggestions} />
-      </div>
-    </>
-  )}
-</div>
-
+        <h2 className="text-2xl font-semibold p-4 mt-4">Resume Scores</h2>
+        <div className="flex flex-col gap-10">
+          <div className="flex gap-5 justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <h3 className="text-2xl font-semibold mb-4">Initial Score</h3>
+              <CircularProgressBar score={initialScore} />
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <h3 className="text-2xl font-semibold mb-4">Final Score</h3>
+              <CircularProgressBar score={finalScore} />
+            </div>
+          </div>
+          {parsedData && (
+            <>
+              <div className="pb-5">
+                <KeywordsInserted keywords={parsedData.keywords_inserted} />
+              </div>
+              <div className="pb-5">
+                <ProjectSuggestions projects={parsedData.project_suggestions} />
+              </div>
+            </>
+          )}
+        </div>
       </aside>
       {/* Main content */}
       <main className="ml-96 flex-1">

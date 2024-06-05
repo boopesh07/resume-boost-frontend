@@ -1,4 +1,3 @@
-// components/ProjectSuggestions.tsx
 import React from 'react';
 
 interface ProjectSuggestionsProps {

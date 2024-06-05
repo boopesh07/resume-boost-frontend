@@ -1,4 +1,3 @@
-// components/TailoredResume.tsx
 import React from 'react';
 
 interface TailoredResumeProps {
