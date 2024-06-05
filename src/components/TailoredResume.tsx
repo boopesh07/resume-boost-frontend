@@ -8,7 +8,7 @@ interface TailoredResumeProps {
 const TailoredResume: React.FC<TailoredResumeProps> = ({ content }) => {
   return (
     <div className="mb-8">
-      <h2 className="text-2xl font-bold mb-4">Tailored Resume</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">Tailored Resume</h2>
       <div className="bg-gray-800 p-4 rounded text-white whitespace-pre-wrap">{content}</div>
     </div>
   );

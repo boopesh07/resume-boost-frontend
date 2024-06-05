@@ -73,7 +73,11 @@ const InputForm: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white p-4">
-      {loading && <div className="loader">Loading...</div>}
+      {loading && (
+        <div className="loader-overlay">
+          <div className="loader"></div>
+        </div>
+      )}
       <h1 className="text-3xl font-bold mt-10 mb-5 tracking-wider">
         Welcome to Resume Boost
       </h1>
