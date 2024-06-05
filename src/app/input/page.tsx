@@ -1,5 +1,5 @@
 
-import InputForm from '../../components/InputForm';
+import InputForm from "@/components/InputForm";
 
 const Home: React.FC = () => {
   return (
