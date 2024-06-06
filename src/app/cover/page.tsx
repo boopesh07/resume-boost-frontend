@@ -13,6 +13,7 @@ const CoverPage: React.FC = () => {
   const [parsedData, setParsedData] = useState<CoverLetterData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coverLetter, setCoverLetter] = useState<string>('');
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -24,6 +25,7 @@ const CoverPage: React.FC = () => {
         if (response.ok) {
           const data: CoverLetterData = await response.json();
           setParsedData(data);
+          setCoverLetter(data.cover_letter); // Set the initial value of the textarea
         } else {
           setError('Failed to fetch cover letter data');
         }
@@ -45,10 +47,26 @@ const CoverPage: React.FC = () => {
   if (loading) return <div className="loader">Loading...</div>;
   if (error) return <div className="error">{error}</div>;
 
+  const handleTextareaChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCoverLetter(event.target.value);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">Generated Cover Letter</h1>
-      {parsedData && <CoverLetter content={parsedData.cover_letter} />}
+    <div>
+      <label
+        className="block text-left text-gray-300 text-2xl pl-3 font-bold mb-5 text-center"
+        htmlFor="coverLetter"
+      >
+        Cover Letter
+      </label>
+      <textarea
+        id="coverLetter"
+        className="w-full p-5 text-sm text-white bg-gray-800 border-0 focus:ring-0 rounded-2xl placeholder:text-[1rem] placeholder:font-medium resize-none"
+        rows={30}
+        cols={120}
+        value={coverLetter}
+        onChange={handleTextareaChange}
+      ></textarea>
     </div>
   );
 };
